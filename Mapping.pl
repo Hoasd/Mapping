@@ -4,33 +4,27 @@ use strict;
 use warnings;
 use feature qw(say);
 use Data::Printer {
-	color => {
-		'regex'  => 'yellow',
-		'hash'   => 'magenta',
-		'string' => 'cyan',
-		'array'  => 'green',
-	},
-	#filters => {
-		#'DateTime' => sub { $_[0]->ymd },
-		#'SCALAR'   => sub { "oh noes, I found a scalar! $_[0]" },
-		#},
+    color => {
+        'regex'  => 'yellow',
+        'hash'   => 'magenta',
+        'string' => 'cyan',
+        'array'  => 'green',
+    },
 };
-
-
 
 my @lines = <DATA>;
 my %lookup = map { $_ => undef } qw/FTXXX1 FTBAZ1/;
 
 foreach my $match (
-	grep {
-		my ($id, @data) = split /,/, $_;
-		#exists $lookup{$id};
-		$lookup{$id} = \@data if exists $lookup{$id};
-	}
-	@lines
+    grep {
+        my ($id, @data) = split /,/, $_;
+        #exists $lookup{$id};
+        $lookup{$id} = \@data if exists $lookup{$id};
+    }
+    @lines
 ) {
-	print $match;
-	#$Logsped{$lookup{$id}} = [splice $match, 1, 5];
+    print $match;
+    #$Logsped{$lookup{$id}} = [splice $match, 1, 5];
 }
 
 p %lookup;
