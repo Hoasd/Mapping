@@ -76,7 +76,7 @@ sub merge_parms_with_credentials {
         chomp $dataset;
         # Convert Logsped from Whitespace to csv and assign the participant as anonymous array reference to: $tn = [FTXXX1,1001,ip,X,Passwd,Port,FTM_TSEL] 
         my $tn = [split '\s+', $dataset];           # split /\s+/ does not work
-        $Logsped{$tn->[0]} = [splice $tn, 1, 5];    # FTxxxx ends up as Key in %Logsped, with an anonymous array 0..5 [nnnn,ip,X,Passwd,Port,FTM_TSEL]  
+        $Logsped{$tn->[0]} = [splice @$tn, 1, 5];    # FTxxxx ends up as Key in %Logsped, with an anonymous array 0..5 [nnnn,ip,X,Passwd,Port,FTM_TSEL]  
         #print Dumper(\%Logsped);
     }
     
@@ -105,7 +105,7 @@ sub merge_parms_with_credentials {
             if ($line->[0] =~ m/$ftam/) {
                 #print "Treffer:\t\$line: $line->[0]\t\$ftam $ftam\n" if ($line->[0] =~ m/$ftam/);
                 $TN_map_ref->{$line->[0]} = $Logsped{$line->[0]};
-                push $TN_map_ref->{$ftam}, @{$line}[1,2,3];  # Anwendung eines Splice, weil $line->[0] FTXXX1 enthaelt und damit redundant in den Datensatz uebernommen werden wuerde!
+                push @{ $TN_map_ref->{$ftam} }, @{$line}[1,2,3];  # Anwendung eines Splice, weil $line->[0] FTXXX1 enthaelt und damit redundant in den Datensatz uebernommen werden wuerde!
                 
                 if ($OPT{debug}) {
                     print "\xe2\x94\x80"x120, "\n";
@@ -164,7 +164,7 @@ sub merge_logsped {
         chomp $dataset;
         # Convert Logsped from Whitespace to csv and assign the participant as anonymous array reference to: $tn = [FTXXX1,1001,ip,X,Passwd,Port,FTM_TSEL] 
         my $tn = [split '\s+', $dataset];           # split /\s+/ does not work
-        $Logsped{$tn->[0]} = [splice $tn, 1, 5];    # FTxxxx ends up as Key in %Logsped, with an anonymous array 0..5 [nnnn,ip,X,Passwd,Port,FTM_TSEL]  
+        $Logsped{$tn->[0]} = [splice @$tn, 1, 5];    # FTxxxx ends up as Key in %Logsped, with an anonymous array 0..5 [nnnn,ip,X,Passwd,Port,FTM_TSEL]  
         #print Dumper(\%Logsped);
     }
     
