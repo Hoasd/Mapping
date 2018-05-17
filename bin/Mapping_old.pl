@@ -18,9 +18,9 @@ my %OPT = (
 my (@vpn_id, @ftam, @ip_addr, %Final_list);
 
 my %targets = (
-    vpn_id  => undef,
-    ftam_id => undef,
-    ip      => undef
+    vpn_id  => [],
+    ftam_id => [],
+    ip      => [],
 );
 
 GetOptions (\%OPT,
