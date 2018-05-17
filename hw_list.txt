@@ -1,0 +1,7 @@
+FTXXX1,1001,Ritter Testing,Cisco 866
+FTFOO1,1129,Foo Limited,CheckPoint
+FTBAR1,1006,Bar Limited,Palo Alto
+FTBLA1,4111,Bla Blubb & Fun,Lancom 1781
+FTBAZ1,1074,Baz Limited,SonicWall NSA 3200
+FTJUH1,1076,J & H Limited,StrongSwan
+FTYYY1,4001,Dummy Yummy Dataset,Cisco ASR 1002

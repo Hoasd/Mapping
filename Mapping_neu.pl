@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use feature qw(say);
+use Getopt::Long;
 use Data::Printer {
     color => {
         'regex'  => 'yellow',
@@ -12,26 +13,29 @@ use Data::Printer {
     },
 };
 
-my @lines = <DATA>;
+
+my %OPT = (
+    "lsped"        => "logsped",
+    "err_log"      => "0_FTXXX1.tst",
+    "participants" => "hw_list.txt",
+    "list"         => 1,
+);
+
+open (my $PARTICIPANTS, "<", $OPT{participants}) or die "Could not open $OPT{map}: $!";
+
 my %lookup = map { $_ => undef } qw/FTXXX1 FTBAZ1/;
 
 foreach my $match (
     grep {
+        chomp $_;
         my ($id, @data) = split /,/, $_;
         #exists $lookup{$id};
         $lookup{$id} = \@data if exists $lookup{$id};
     }
-    @lines
+    <$PARTICIPANTS>
 ) {
-    print $match;
+    say $match;
     #$Logsped{$lookup{$id}} = [splice $match, 1, 5];
 }
 
 p %lookup;
-
-__DATA__
-FTXXX1,1001,Ritter Testing,Cisco 866
-FTFOO1,1129,Foo Limited,CheckPoint
-FTBAR1,1006,Bar Limited,Palo Alto
-FTBAZ1,1074,Baz Limited,SonicWall NSA 3200
-FTJUH1,1076,J & H Limited,StrongSwan
