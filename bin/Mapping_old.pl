@@ -53,33 +53,35 @@ sub shift_values {
 sub merge_parms_with_credentials {
     #print Dumper(\%targets);
     my $TN_map_ref = shift;        # Ergebnisliste (%TN_map = (%Logsped - %FailedConnections)) -> {FTxxxx} => [vpn_id,Name,Hardware]
-    my %Logsped;                   # Dort landet die konvertierte Logsped aus <CREDENTIALS> als Hash
+    my %Logsped;                   # Dort landet die konvertierte Logsped aus <$fh_credentials> als Hash
     my @F;
 
     # Einlesen der Hardwareliste
-    open (MAP, "<", $OPT{map}) or die "Could not open $OPT{map}: $!";
+    open (my $fh_map, "<", $OPT{map}) or die "Could not open $OPT{map}: $!";
    
 
 #    my $pattern = join '|', map { sprintf '(:?%s)', $_ } @patterns;
 
 
-    while (my $item = <MAP>) {
+    while (my $item = <$fh_map>) {
         chomp $item;
         my @items = split /,/, $item, 4;
         push @F, [ $items[0], $items[1], $items[2], $items[3]  ];
-    } 
+    }
+    close $fh_map;
     #print Dumper(\@F);
     
     # Einlesen der Logsped 
-    open (CREDENTIALS, "<", $OPT{lsped}) or die "Could not open $OPT{lsped}: $!";
-    while (my $dataset = <CREDENTIALS>) {
+    open (my $fh_credentials, "<", $OPT{lsped}) or die "Could not open $OPT{lsped}: $!";
+    while (my $dataset = <$fh_credentials>) {
         chomp $dataset;
         # Convert Logsped from Whitespace to csv and assign the participant as anonymous array reference to: $tn = [FTXXX1,1001,ip,X,Passwd,Port,FTM_TSEL] 
         my $tn = [split '\s+', $dataset];           # split /\s+/ does not work
         $Logsped{$tn->[0]} = [splice @$tn, 1, 5];    # FTxxxx ends up as Key in %Logsped, with an anonymous array 0..5 [nnnn,ip,X,Passwd,Port,FTM_TSEL]  
         #print Dumper(\%Logsped);
     }
-    
+    close $fh_credentials;
+
    # foreach my $ip (@{$targets{ip}}) {
    #     say $ip;
    # }
@@ -149,25 +151,27 @@ sub print_list {
 }
 
 sub merge_logsped {
-    my %Logsped;                        # Dort landet die konvertierte Logsped aus <CREDENTIALS> als Hash
+    my %Logsped;                        # Dort landet die konvertierte Logsped aus <$fh_credentials> als Hash
     #say "Bin in \&merge_logsped | vor dem Dumper";
     my $Final_list = shift;                    # Ergebnisliste (%TN_map = (%Logsped - %FailedConnections)) -> {FTxxxx} => [vpn_id,Name,Hardware]
     #say "Bin in \&merge_logsped | nach dem Dumper";
 
-    open (UNREACHABLES, "<", $OPT{err_log}) or die "Could not open $OPT{err_log}: $!";
-    my %Failed_Connections = map { chomp; split /,/, $_, 2 } <UNREACHABLES>;
+    open (my $fh_unrechables, "<", $OPT{err_log}) or die "Could not open $OPT{err_log}: $!";
+    my %Failed_Connections = map { chomp; split /,/, $_, 2 } <$fh_unrechables>;
+    close $fh_unrechables;
     #print Dumper(\%Failed_Connections);
 
     #print Dumper($Final_list);
-    open (CREDENTIALS, "<", $OPT{lsped}) or die "Could not open $OPT{lsped}: $!";
-    while (my $dataset = <CREDENTIALS>) {
+    open (my $fh_credentials, "<", $OPT{lsped}) or die "Could not open $OPT{lsped}: $!";
+    while (my $dataset = <$fh_credentials>) {
         chomp $dataset;
         # Convert Logsped from Whitespace to csv and assign the participant as anonymous array reference to: $tn = [FTXXX1,1001,ip,X,Passwd,Port,FTM_TSEL] 
         my $tn = [split '\s+', $dataset];           # split /\s+/ does not work
         $Logsped{$tn->[0]} = [splice @$tn, 1, 5];    # FTxxxx ends up as Key in %Logsped, with an anonymous array 0..5 [nnnn,ip,X,Passwd,Port,FTM_TSEL]  
         #print Dumper(\%Logsped);
     }
-    
+    close $fh_credentials;
+
     # Verheiraten der %Failed_Connections mit der %Logsped und der %TN_Map als Ergebnis:
     foreach my $tn (keys %Failed_Connections) {
         $Final_list{$tn} = $Logsped{$tn} if exists $Failed_Connections{$tn}; # Weise %TN_Map den Datensatz aus der %Logsped zu wenn match mit der %Failed_Connections 
