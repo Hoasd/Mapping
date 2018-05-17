@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-#  ./port_check_1.2 --lsped logsped --map 2_ALL_SOSS_and_AVAY.lst -e 0_FTDUMY.tst -t ftxxx1
-
 use strict;
 use warnings;
 use POSIX;
